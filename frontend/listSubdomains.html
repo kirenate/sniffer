@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List Subdomains - Domain Sniffer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .results {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .results-header {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .results-list {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            max-height: 400px;
+            overflow-y: auto;
+            text-align: center;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .result-item {
+            padding: 15px 20px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .result-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .subdomain-name {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .subdomain-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 6px 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+
+        .subdomain-link:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .loading {
+            display: none;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(102, 126, 234, 0.1);
+            border-left: 4px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .back-btn {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .back-btn:hover {
+            background: rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="logo">🔍 Sniffer</div>
+
+        <form id="searchForm">
+            <div class="form-group">
+                <label for="domain" class="form-label">Enter Domain Name</label>
+                <input type="text" id="domain" name="domain" class="form-input" placeholder="example.com" required>
+            </div>
+
+            <button type="submit" class="search-btn" id="searchBtn">
+                🔍 List Subdomains
+            </button>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="loading-spinner"></div>
+            <p>Searching for subdomains...</p>
+        </div>
+
+        <div class="results" id="results" style="display: none;">
+            <div class="results-header" id="resultsHeader">
+                <!-- Results summary will be shown here -->
+            </div>
+            <div class="results-list" id="resultsList">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+
+        <a href="/" class="back-btn">🔙 Back to Main</a>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const domain = document.getElementById('domain').value.trim();
+            if (!domain) {
+                alert('Please enter a domain name');
+                return;
+            }
+            searchSubdomains(domain);
+        });
+
+        function searchSubdomains(domain) {
+            const searchBtn = document.getElementById('searchBtn');
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+
+            // Show loading state
+            searchBtn.disabled = true;
+            searchBtn.textContent = '🔍 Searching...';
+            loading.style.display = 'block';
+            results.style.display = 'none';
+
+            fetch(`/subdomains?domain=${encodeURIComponent(domain)}`)
+                .then(response => response.json())
+                .then(data => {
+                    displayResults(data, domain);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    displayResults([], domain);
+                })
+                .finally(() => {
+                    // Reset button state
+                    searchBtn.disabled = false;
+                    searchBtn.textContent = '🔍 List Subdomains';
+                    loading.style.display = 'none';
+                });
+        }
+
+        function displayResults(subdomains, domain) {
+            const results = document.getElementById('results');
+            const resultsHeader = document.getElementById('resultsHeader');
+            const resultsList = document.getElementById('resultsList');
+
+            if (!subdomains || subdomains.length === 0) {
+                resultsHeader.innerHTML = `<h3>No subdomains found for ${domain}</h3>`;
+                resultsList.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">No subdomains discovered.</div>';
+            } else {
+                resultsHeader.innerHTML = `<h3>Found ${subdomains.length} subdomain${subdomains.length !== 1 ? 's' : ''} for ${domain}</h3>`;
+
+                resultsList.innerHTML = '';
+                subdomains.forEach(subdomain => {
+                    const item = document.createElement('div');
+                    item.className = 'result-item';
+                    item.innerHTML = `
+                        <span class="subdomain-name">${subdomain}</span>
+                        <a href="http://${subdomain}" target="_blank" class="subdomain-link">VISIT</a>
+                    `;
+                    resultsList.appendChild(item);
+                });
+            }
+
+            results.style.display = 'block';
+        }
+
+        // Auto-focus on domain input
+        document.getElementById('domain').focus();
+    </script>
+</body>
+
+</html>
