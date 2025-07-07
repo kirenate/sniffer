@@ -30,6 +30,23 @@ type Enumerator interface {
 	GetEngineName() string
 }
 
+type Config struct {
+	BaseURL    string
+	MaxDomains int
+	MaxPages   int
+	EngineName string
+}
+type EnumeratorContainer struct {
+	Config     Config
+	Enumerator Enumerator
+}
+
+func GetEnumerators() []EnumeratorContainer {
+	return []EnumeratorContainer{
+		{Enumerator: &searchEngines.CrtEnum{}, Config: Config{BaseURL: "...", MaxDomains: 10}},
+	}
+}
+
 var client = http.Client{
 	Transport:     nil,
 	CheckRedirect: nil,

@@ -2,7 +2,6 @@ package tests
 
 import (
 	"fmt"
-	"github.com/coreos/etcd/pkg/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io"
@@ -20,7 +19,7 @@ func TestFormat(t *testing.T) {
 	s = utils.Format(s, 1, "{page_no}")
 
 	res := "https://crt.sh/?q=%25.misis.ru"
-	testutil.AssertEqual(t, res, s, "test successful")
+	assert.Equal(t, res, s)
 	fmt.Println(s)
 }
 
