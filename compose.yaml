@@ -2,3 +2,6 @@ services:
   server:
     build:
       context: .
+    volumes:
+      - ".ssl/ssl.cert"
+      - ".ssl/ssl.key"

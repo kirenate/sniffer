@@ -19,7 +19,7 @@ func main() {
 	app.Get("/subdomains", presentation.HandleSubdomains)
 	app.Get("/", presentation.HandleListSubdomainsPage)
 
-	err := app.Listen(addr)
+	err := app.ListenTLS(addr, ".ssl/ssl.cert", ".ssl/ssl.key")
 	if err != nil {
 		log.Panic().Stack().Msg("listener failed")
 	}
