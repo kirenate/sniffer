@@ -12,7 +12,7 @@ import (
 var log = logger.MakeLogger()
 
 func main() {
-	addr := "localhost:8080"
+	addr := "0.0.0.0:443"
 	app := fiber.New(fiber.Config{Immutable: true})
 
 	app.Use(recover2.New(recover2.Config{EnableStackTrace: true}))
