@@ -21,6 +21,6 @@ func main() {
 
 	err := app.ListenTLS(addr, ".ssl/ssl.cert", ".ssl/ssl.key")
 	if err != nil {
-		log.Panic().Stack().Msg("listener failed")
+		log.Panic().Stack().Err(err).Msg("listener failed")
 	}
 }
