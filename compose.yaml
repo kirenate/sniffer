@@ -5,9 +5,6 @@ services:
     volumes:
       - "./.ssl/ssl_cert.pem:/build/.ssl/ssl_cert.pem"
       - "./.ssl/ssl_key.pem:/build/.ssl/ssl_key.pem"
-networks:
-  static-network:
-    ipam:
-      config:
-        - subnet: 195.133.32.0/16
-          ip_range: 195.133.46.214/24
+    ports:
+      - "443:443"
+      - "80:80"
