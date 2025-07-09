@@ -3,5 +3,5 @@ services:
     build:
       context: .
     volumes:
-      - "./.ssl/ssl.cert"
-      - "./.ssl/ssl.key"
+      - "./.ssl/ssl_cert.pem:/build/.ssl/ssl_cert.pem"
+      - "./.ssl/ssl_key.pem:/build/.ssl/ssl_key.pem"

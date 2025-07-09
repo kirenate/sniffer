@@ -5,8 +5,7 @@ import (
 	"sniffer/logger"
 	"sniffer/presentation"
 
-	//"sniffer/sublister"
-	fiber "github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2"
 )
 
 var log = logger.MakeLogger()
@@ -19,7 +18,7 @@ func main() {
 	app.Get("/subdomains", presentation.HandleSubdomains)
 	app.Get("/", presentation.HandleListSubdomainsPage)
 
-	err := app.ListenTLS(addr, ".ssl/ssl.cert", ".ssl/ssl.key")
+	err := app.ListenTLS(addr, "./.ssl/ssl_cert.pem", "./.ssl/ssl_cert.pem")
 	if err != nil {
 		log.Panic().Stack().Err(err).Msg("listener failed")
 	}
