@@ -5,6 +5,7 @@ services:
     volumes:
       - "./.ssl/ssl_cert.pem:/build/.ssl/ssl_cert.pem"
       - "./.ssl/ssl_key.pem:/build/.ssl/ssl_key.pem"
+      - "./frontend/listSubdomains.html:/build/frontend/listSubdomains.html"
     ports:
       - "443:443"
       - "80:80"
